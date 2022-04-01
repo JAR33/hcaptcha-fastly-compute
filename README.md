@@ -21,7 +21,7 @@ Add the following items:
 
 `sitekey` and `secret_key` should be taken from https://www.hcaptcha.com/
 
-`shared_secret` is an shared security key string that is sent to the backend
+`shared_secret` is a shared security key string that is sent to the backend. You can check this in your backend code to validate that the request was in fact processed at the edge.
 
 `keep_hcaptcha_response_header` (default: 0) - if set to 1 then forward X-hCaptcha-Response to the Origin
 
