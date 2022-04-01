@@ -23,7 +23,7 @@ Add the following items:
 
 `shared_secret` is a shared security key string that is sent to the backend. You can check this in your backend code to validate that the request was in fact processed at the edge.
 
-`keep_hcaptcha_response_header` (default: 0) - if set to 1 then forward X-hCaptcha-Response to the Origin
+`keep_hcaptcha_response_header` (default: 0) - if set to 1 then forward X-hCaptcha-Response to the Origin. In general you can leave this off, as the response is a single-use token that has already been consumed by the edge.
 
 
 ## Backends
