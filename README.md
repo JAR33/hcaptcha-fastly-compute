@@ -10,7 +10,7 @@ It runs on Fastly's Compute@Edge platform, sitting in between the client and you
 To use it, simply add the hCaptcha JS to your page and make sure requests to protected endpoints do the following:
 
 - match a path you have defined in the **protected_paths** config
-- send a `X-hCaptcha-Response` header with the hCaptcha token, i.e. the response returned by `hcaptcha.execute()` success callback.
+- send a `X-hCaptcha-Response` header with the hCaptcha token, i.e. the response returned by `hcaptcha.execute()` success callback, in XHRs to your origin server's protected endpoints.
 
 When a protected path is requested, this code will check for the token in the client request.
 
