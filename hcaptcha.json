@@ -3,5 +3,7 @@
     "sitekey": "20000000-ffff-ffff-ffff-000000000002",
     "secret_key": "0x0000000000000000000000000000000000000000",
     "shared_secret": "TheSecret",
-    "keep_hcaptcha_response_header": "1"
+    "keep_hcaptcha_response_header": "1",
+    "use_post_body_field": "hcaptcha_response",
+    "method": "post"
 }

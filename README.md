@@ -31,14 +31,23 @@ Add the following items:
 |method                         |POST                                        | No       |
 |shared_secret                  |TheSecret                                   | No       |
 |keep_hcaptcha_response_header  |0                                           | No       |
+|use_post_body_field            |hcaptcha_response                           | No       |
+|max_post_size                  |1048576                                     | No       |
+|method                         |post                                        | No       |
 
 `protected_paths`: is a comma separated list of regex patterns for protected paths
 
 `sitekey` and `secret_key` should be taken from https://www.hcaptcha.com/ (sitekey and account secret used for backend validation)
 
-`shared_secret` (optional) is a shared security key sent to the backend via the `X-hCaptcha-Edge-Secret` header. You can check this in your backend code to validate that the request was in fact processed at the edge.
+`shared_secret` (optional): is a shared security key sent to the backend via the `X-hCaptcha-Edge-Secret` header. You can check this in your backend code to validate that the request was in fact processed at the edge.
 
-`keep_hcaptcha_response_header` (default: 0) - if set to 1 then forward X-hCaptcha-Response to the Origin. In general you can leave this off, as the response is a single-use token that has already been consumed by the edge.
+`keep_hcaptcha_response_header` (default: 0): if set to 1 then forward X-hCaptcha-Response to the Origin. In general you can leave this off, as the response is a single-use token that has already been consumed by the edge.
+
+`use_post_body_field` (optional): if set use this field name to extract hCaptcha Response value from POST body JSON
+
+`max_post_size` (default: 1048576): maximal POST body size to read
+
+`method` (default: "POST"): only process requests with the given HTTP method
 
 
 ## Backends
