@@ -1,6 +1,21 @@
 # hcaptcha-fastly-compute
 hCaptcha Serverless on Fastly Compute@Edge (Rust)
 
+## Introduction
+
+This code runs on Fastly's Compute@Edge platform, sitting in between the client and your backend server.
+
+Using it lets you create a Serverless hCaptcha WAF that stops bad requests to your protected endpoints at the edge.
+
+To use it, simply add the hCaptcha JS to your page and make sure requests to protected endpoints do the following:
+
+- match a path you have defined in the **protected_paths** config
+- send the `X-hCaptcha-Response` token, i.e. the hCaptcha response returned by the `hcaptcha.execute()` success callback.
+
+When a protected path is requested, this code will check for the token in the client request.
+
+- If a token is found, it will call the hCaptcha service endpoint to validate and let the request through if it passes.
+- If the token is missing, invalid, or expired, the client will receive an error and the request will never reach your backend.
 
 ## Configuration
 
@@ -10,16 +25,16 @@ Add the following items:
 
 | Key                           | Sample value                               | Required |
 |-------------------------------|--------------------------------------------|----------|
-|protected_paths                |/t?st, /login, /auth/*                      | Yes      |
+|protected_paths                |`/t?st`, `/login`, `/auth/*`                | Yes      |
 |sitekey                        |20000000-ffff-ffff-ffff-000000000002        | Yes      |
 |secret_key                     |0x0000000000000000000000000000000000000000  | Yes      |
 |method                         |POST                                        | No       |
 |shared_secret                  |TheSecret                                   | No       |
 |keep_hcaptcha_response_header  |0                                           | No       |
 
-`protected_paths`: is a comma separated list of patterns for protected paths
+`protected_paths`: is a comma separated list of regex patterns for protected paths
 
-`sitekey` and `secret_key` should be taken from https://www.hcaptcha.com/
+`sitekey` and `secret_key` should be taken from https://www.hcaptcha.com/ (sitekey and account secret used for backend validation)
 
 `shared_secret` (optional) is a shared security key sent to the backend via the `X-hCaptcha-Edge-Secret` header. You can check this in your backend code to validate that the request was in fact processed at the edge.
 
