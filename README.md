@@ -68,3 +68,19 @@ Adjust `local_server.backends.Origin` in `fastly.toml` file to point to your Ori
 then run this command:
 
 `fastly compute serve`
+
+
+## Testing from your Browser
+
+This code ships using the "Enterprise Publisher Safe" [integration test keys](https://docs.hcaptcha.com/#test-key-set-enterprise-account-safe-end-user).
+
+Since the response expected is `20000000-aaaa-bbbb-cccc-000000000002` you can easily check frontend behavior as follows:
+
+```js
+  var response = '20000000-aaaa-bbbb-cccc-000000000002';
+  var xhr = new XMLHttpRequest();
+  var jsondata = JSON.stringify({login: "value"});
+  xhr.open("POST", 'YOUR-fastly-hcaptcha-protected-endpoint');
+  xhr.setRequestHeader('X-hCaptcha-Response', response);
+  xhr.send(jsondata);
+```
