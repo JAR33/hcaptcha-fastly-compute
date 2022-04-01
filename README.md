@@ -1,4 +1,5 @@
 # hcaptcha-fastly-compute
+
 hCaptcha Serverless on Fastly Compute@Edge (Rust)
 
 ## Introduction
@@ -79,7 +80,7 @@ Since the response expected is `20000000-aaaa-bbbb-cccc-000000000002` you can ea
 ```js
   var response = '20000000-aaaa-bbbb-cccc-000000000002';
   var xhr = new XMLHttpRequest();
-  var jsondata = JSON.stringify({login: "value"});
+  var jsondata = JSON.stringify({login: 'value'});
   xhr.open("POST", 'YOUR-fastly-hcaptcha-protected-endpoint');
   xhr.setRequestHeader('X-hCaptcha-Response', response);
   xhr.send(jsondata);
