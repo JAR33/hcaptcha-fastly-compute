@@ -71,17 +71,45 @@ then run this command:
 `fastly compute serve`
 
 
-## Testing from your Browser
+## Testing 
 
 This code ships using the "Enterprise Publisher Safe" [integration test keys](https://docs.hcaptcha.com/#test-key-set-enterprise-account-safe-end-user).
 
 Since the response expected is `20000000-aaaa-bbbb-cccc-000000000002` you can easily check frontend behavior as follows:
 
+### Testing via `curl`
+
+Let's send a valid request to a protected path:
+  
+    curl -H "X-hCaptcha-Response: 20000000-aaaa-bbbb-cccc-000000000002"  https://your.edgecompute.app/login 
+
+You should see the output:
+
+    x-hcaptcha-response: 20000000-aaaa-bbbb-cccc-000000000002
+    x-hcaptcha-score: 0
+    x-hcaptcha-score-reason: safe
+
+and now let's try to send a request to protected path with an invalid Response:
+
+    curl -v -H "X-hCaptcha-Response: F00" https://your.edgecompute.app/test 
+
+it should return 401 HTTP code.
+
+and if you send any non-protected request:
+
+    curl -v -H "X-hCaptcha-Response: F00" https://your.edgecompute.app/ 
+
+it will output Request headers with 200 HTTP code.
+
+
+### Testing from your Browser
+
+
 ```js
   var response = '20000000-aaaa-bbbb-cccc-000000000002';
   var xhr = new XMLHttpRequest();
   var jsondata = JSON.stringify({login: 'value'});
-  xhr.open("POST", 'YOUR-fastly-hcaptcha-protected-endpoint');
+  xhr.open("POST", 'https://your.edgecompute.app/login');
   xhr.setRequestHeader('X-hCaptcha-Response', response);
   xhr.send(jsondata);
 ```
