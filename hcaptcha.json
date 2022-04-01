@@ -1,0 +1,5 @@
+{
+    "protected_paths": "/t?st, /login, /auth/*",
+    "sitekey": "20000000-ffff-ffff-ffff-000000000002",
+    "secret_key": "0x0000000000000000000000000000000000000000"
+}

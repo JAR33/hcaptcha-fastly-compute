@@ -1,0 +1,19 @@
+
+[dependencies]
+  fastly = "^0.8.0"
+  log-fastly = "^0.8.0"
+  log = "0.4.16"
+  serde_json = "1.0.78"
+  glob = "0.3.0"
+
+[package]
+  authors = []
+  edition = "2018"
+  name = "hcaptcha-fastly-compute"
+  publish = false
+  version = "0.1.0"
+
+[profile]
+
+  [profile.release]
+    debug = 1
