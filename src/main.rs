@@ -11,6 +11,7 @@ const HCAPTCHARESPONSE_HEADER: &str = "X-hCaptcha-Response";
 const HCAPTCHA_SCORE_HEADER: &str = "X-hCaptcha-Score";
 const HCAPTCHA_SCORE_REASON_HEADER: &str = "X-hCaptcha-Score-Reason";
 const HCAPTCHA_EDGE_SECRET_HEADER: &str = "X-hCaptcha-Edge-Secret";
+const MAX_POST_SIZE: usize = 1*1024*1024;
 
 #[derive(Default)]
 pub struct Configuration {
@@ -20,6 +21,8 @@ pub struct Configuration {
     pub secret_key: String,
     pub shared_secret: Option<String>,
     pub keep_hcaptcha_response_header: i32,
+    pub use_post_body_field: Option<String>,
+    pub max_post_size: usize,
 }
 
 fn load_config() -> Option<Configuration> {
@@ -28,7 +31,7 @@ fn load_config() -> Option<Configuration> {
 
     conf.method = match dict.get("method") {
         Some(method) => method.to_uppercase(),
-        _ => "GET".to_string(),
+        _ => "POST".to_string(),
     };
 
     conf.sitekey = match dict.get("sitekey") {
@@ -48,6 +51,13 @@ fn load_config() -> Option<Configuration> {
         _ => 0,
     };
 
+    conf.max_post_size = match dict.get("max_post_size") {
+        Some(i) => i.parse().unwrap(),
+        _ => MAX_POST_SIZE,
+    };
+
+    conf.use_post_body_field = dict.get("use_post_body_field");
+
     conf.protected_paths = match dict.get("protected_paths") {
         Some(protected_paths) => protected_paths
             .split(",")
@@ -65,13 +75,54 @@ fn load_config() -> Option<Configuration> {
 }
 
 fn verify_request(req: &mut Request, conf: &Configuration) -> bool {
-    let hcaptcharesponse = match req.get_header_str(HCAPTCHARESPONSE_HEADER) {
-        Some(val) => val,
-        _ => {
-            log::info!("Header not found: {HCAPTCHARESPONSE_HEADER}");
+
+    let hcaptcharesponse: String;
+
+    // use POST body to extract hCaptcha response
+    if let Some(post_body_field) = &conf.use_post_body_field {
+
+        let content_length:usize = match req.get_content_length() {
+            Some(val) => val,
+            _ => {
+                log::error!("Failed to parse Request with hCaptcha response body, Content-Length not present");
+                return false;
+            }
+        };
+
+        if content_length >= conf.max_post_size {
+            log::error!("Failed to parse Request with hCaptcha response body, body too large");
             return false;
         }
-    };
+
+        let pfx = req.get_body_prefix_mut(conf.max_post_size);
+        let body_json: serde_json::Value = match serde_json::from_slice(&pfx) {
+            Ok(val) => val,
+            _ => {
+                log::error!("Failed to parse Request with hCaptcha response body");
+                return false;
+            }
+        };
+
+        let val = match body_json[post_body_field].as_str() {
+            Some(val) => val,
+            _ => {
+                log::error!("Failed to parse Request with hCaptcha response body");
+                return false;
+            }
+        };
+
+        hcaptcharesponse = val.to_string();
+
+    // use X-hCaptcha-Response header to extract hCaptcha response
+    } else {
+        hcaptcharesponse = match req.get_header_str(HCAPTCHARESPONSE_HEADER) {
+            Some(val) => val.to_string(),
+            _ => {
+                log::info!("Header not found: {HCAPTCHARESPONSE_HEADER}");
+                return false;
+            }
+        };
+    }
 
     let client_ip = match req.get_client_ip_addr() {
         Some(val) => val.to_string(),
