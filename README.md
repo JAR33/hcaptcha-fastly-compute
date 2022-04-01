@@ -3,9 +3,9 @@ hCaptcha Serverless on Fastly Compute@Edge (Rust)
 
 ## Introduction
 
-This code runs on Fastly's Compute@Edge platform, sitting in between the client and your backend server.
+This code lets you easily create a Serverless hCaptcha WAF to stop bad requests to protected endpoints at the edge.
 
-Using it lets you create a Serverless hCaptcha WAF that stops bad requests to your protected endpoints at the edge.
+It runs on Fastly's Compute@Edge platform, sitting in between the client and your backend server.
 
 To use it, simply add the hCaptcha JS to your page and make sure requests to protected endpoints do the following:
 
