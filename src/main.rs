@@ -18,7 +18,7 @@ pub struct Configuration {
     pub method: String,
     pub sitekey: String,
     pub secret_key: String,
-    pub shared_secret: String,
+    pub shared_secret: Option<String>,
     pub keep_hcaptcha_response_header: i32,
 }
 
@@ -41,10 +41,7 @@ fn load_config() -> Option<Configuration> {
         _ => return None,
     };
 
-    conf.shared_secret = match dict.get("shared_secret") {
-        Some(shared_secret) => shared_secret,
-        _ => return None,
-    };
+    conf.shared_secret = dict.get("shared_secret");
 
     conf.keep_hcaptcha_response_header = match dict.get("keep_hcaptcha_response_header") {
         Some(i) => i.parse().unwrap(),
@@ -140,7 +137,9 @@ fn verify_request(req: &mut Request, conf: &Configuration) -> bool {
     }
 
     // attach shared secret key
-    req.set_header(HCAPTCHA_EDGE_SECRET_HEADER, &conf.shared_secret);
+    if let Some(shared_secret) = &conf.shared_secret {
+        req.set_header(HCAPTCHA_EDGE_SECRET_HEADER, shared_secret);
+    }
 
     // remove X-hCaptcha-Response
     if conf.keep_hcaptcha_response_header == 0 {
