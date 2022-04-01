@@ -10,6 +10,7 @@ const SITE_VERIFY_URL: &str = "https://hcaptcha.com/siteverify";
 const HCAPTCHARESPONSE_HEADER: &str = "X-hCaptcha-Response";
 const HCAPTCHA_SCORE_HEADER: &str = "X-hCaptcha-Score";
 const HCAPTCHA_SCORE_REASON_HEADER: &str = "X-hCaptcha-Score-Reason";
+const HCAPTCHA_EDGE_SECRET_HEADER: &str = "X-hCaptcha-Edge-Secret";
 
 #[derive(Default)]
 pub struct Configuration {
@@ -17,6 +18,8 @@ pub struct Configuration {
     pub method: String,
     pub sitekey: String,
     pub secret_key: String,
+    pub shared_secret: String,
+    pub keep_hcaptcha_response_header: i32,
 }
 
 fn load_config() -> Option<Configuration> {
@@ -36,6 +39,16 @@ fn load_config() -> Option<Configuration> {
     conf.secret_key = match dict.get("secret_key") {
         Some(secret_key) => secret_key,
         _ => return None,
+    };
+
+    conf.shared_secret = match dict.get("shared_secret") {
+        Some(shared_secret) => shared_secret,
+        _ => return None,
+    };
+
+    conf.keep_hcaptcha_response_header = match dict.get("keep_hcaptcha_response_header") {
+        Some(i) => i.parse().unwrap(),
+        _ => 0,
     };
 
     conf.protected_paths = match dict.get("protected_paths") {
@@ -124,6 +137,14 @@ fn verify_request(req: &mut Request, conf: &Configuration) -> bool {
                 .collect::<String>(),
         ),
         _ => {}
+    }
+
+    // attach shared secret key
+    req.set_header(HCAPTCHA_EDGE_SECRET_HEADER, &conf.shared_secret);
+
+    // remove X-hCaptcha-Response
+    if conf.keep_hcaptcha_response_header == 0 {
+        req.remove_header(HCAPTCHARESPONSE_HEADER);
     }
 
     return true;
