@@ -14,7 +14,7 @@ Add the following items:
 |sitekey                        |20000000-ffff-ffff-ffff-000000000002        | Yes      |
 |secret_key                     |0x0000000000000000000000000000000000000000  | Yes      |
 |method                         |POST                                        | No       |
-|shared_secret                  |TheSecret                                   | Yes      |
+|shared_secret                  |TheSecret                                   | No       |
 |keep_hcaptcha_response_header  |0                                           | No       |
 
 `protected_paths`: is a comma separated list of patterns for protected paths
